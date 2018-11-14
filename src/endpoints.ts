@@ -11,7 +11,7 @@ class MiddleResponse {
     rowCount: number;
     fields: FieldDef[];
 
-    constructor (result: QueryResult) {
+    constructor(result: QueryResult) {
         this.rows = result.rows;
         this.rowCount = result.rowCount;
         this.fields = result.fields;
@@ -28,23 +28,14 @@ server.post('/qdb', (req, res, next) => {
             res.send(response);
         })
         .catch(error => {
-            var serverError = new errors.BadRequest({
+            var badRequest = new errors.BadRequestError({
                 info: {
                     params: req.params,
-                    error: error.stack
+                    error: error.message
                 }
-            }, error.stack);
-            console.error(serverError);
-            // TODO: How are we going to tell the client
-            // which fields are wrong or which conditions
-            // are not?
-            if (isDev()) {
-                // Return the error
-                res.send(serverError);
-            } else {
-                // Silent failure
-                res.send(400);
-            }
+            }, error.message);
+            console.info(badRequest);
+            res.send(badRequest);
         })
         .then(() => {
             return next();
