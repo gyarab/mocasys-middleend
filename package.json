@@ -7,7 +7,7 @@
     "test": "",
     "test:debug": "",
     "compile": "tsc",
-    "start": "npm run compile && node out/main.js",
+    "start": "npm run compile && NODE_ENV=development node out/main.js",
     "dev": "./node_modules/nodemon/bin/nodemon.js"
   },
   "author": "Tomas Cerny",

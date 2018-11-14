@@ -1,8 +1,11 @@
 import * as restify from 'restify';
 import * as corsMiddleware from 'restify-cors-middleware';
 
-let server = restify.createServer();
-export default server;
+export const server = restify.createServer();
+
+export function isDev() {
+    return process.env.NODE_ENV == 'development';
+}
 
 const cors = corsMiddleware({
     origins: ['*'], // TODO: Change before releasing
