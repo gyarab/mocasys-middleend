@@ -7,15 +7,17 @@
     "test": "",
     "test:debug": "",
     "compile": "tsc",
-    "start": "npm run compile && node out/main.js",
+    "start": "npm run compile && NODE_ENV=development node out/main.js",
     "dev": "./node_modules/nodemon/bin/nodemon.js"
   },
   "author": "Tomas Cerny",
   "license": "NA",
   "dependencies": {
     "@types/node": "^8.0.47",
+    "@types/pg": "^7.4.11",
     "@types/restify": "^5.0.6",
     "@types/restify-cors-middleware": "^1.0.1",
+    "config": "^2.0.1",
     "pg": "^7.6.1",
     "restify": "^7.2.2",
     "restify-clients": "^2.6.3",
@@ -24,6 +26,7 @@
     "restify-plugins": "^1.6.0"
   },
   "devDependencies": {
+    "@types/config": "0.0.34",
     "jest": "^23.6.0",
     "nodemon": "^1.18.6",
     "ts-node": "^7.0.1",
