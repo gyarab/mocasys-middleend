@@ -1,0 +1,10 @@
+{
+    "db": {
+        "host": "localhost",
+        "port": 5432,
+        "user": "postgres",
+        "password": "+mo1Z'8lI4w~PrmnKh5B@\\_M)e}PRS",
+        "database": "mocasys_0"
+    },
+    "_desc": "Local development config."
+}
