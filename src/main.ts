@@ -1,7 +1,8 @@
 import * as restify from 'restify';
 import * as corsMiddleware from 'restify-cors-middleware';
 
-export let server = restify.createServer();
+let server = restify.createServer();
+export default server;
 
 const cors = corsMiddleware({
     origins: ['*'], // TODO: Change before releasing
@@ -17,9 +18,11 @@ server.use(restify.plugins.queryParser({ mapParams: true }));
 // server.use(restify.plugins.fullResponse());
 server.use(restify.plugins.authorizationParser());
 
-server.get('/hello', (req, res, next) => {
-    res.send("Hello, World!");
+server.get('/ping', (req, res, next) => {
+    res.send('pong');
 });
+
+import './endpoints'
 
 server.listen(8080, 'localhost', () => {
     console.log('INFO: Node app is running at localhost:8080');
