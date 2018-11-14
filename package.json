@@ -14,8 +14,10 @@
   "license": "NA",
   "dependencies": {
     "@types/node": "^8.0.47",
+    "@types/pg": "^7.4.11",
     "@types/restify": "^5.0.6",
     "@types/restify-cors-middleware": "^1.0.1",
+    "config": "^2.0.1",
     "pg": "^7.6.1",
     "restify": "^7.2.2",
     "restify-clients": "^2.6.3",
