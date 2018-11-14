@@ -5,7 +5,7 @@ console.log('hello from endpoints!');
 server.get('/qdb', (req, res, next) => {
     const client = clientFactory();
     client.connect().then(() => {
-        client.query('SELECT * FROM dummy_table', (err, qres) => {
+        client.query('SELECT * FROM payments_invoice', (err, qres) => {
             if (err) {
                 console.log(err.stack);
                 res.send(err.stack);
@@ -14,6 +14,7 @@ server.get('/qdb', (req, res, next) => {
                 res.send(qres.rows);
             }
             client.end()
+            return next();
         })
     })
 });

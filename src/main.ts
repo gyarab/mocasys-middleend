@@ -20,6 +20,7 @@ server.use(restify.plugins.authorizationParser());
 
 server.get('/ping', (req, res, next) => {
     res.send('pong');
+    return next();
 });
 
 import './endpoints'
