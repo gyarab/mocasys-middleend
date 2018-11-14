@@ -26,6 +26,7 @@
     "restify-plugins": "^1.6.0"
   },
   "devDependencies": {
+    "@types/config": "0.0.34",
     "jest": "^23.6.0",
     "nodemon": "^1.18.6",
     "ts-node": "^7.0.1",
