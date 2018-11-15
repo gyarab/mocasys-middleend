@@ -22,6 +22,7 @@ server.use(restify.plugins.queryParser({ mapParams: true }));
 server.use(restify.plugins.authorizationParser());
 
 server.get('/ping', (req, res, next) => {
+    res.header('Content-Type', 'text/plain');
     res.send('pong');
     return next();
 });

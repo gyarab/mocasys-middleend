@@ -20,24 +20,32 @@ class MiddleResponse {
 
 console.log('hello from endpoints!');
 server.post('/qdb', (req, res, next) => {
-    db.queryPromise(req.params['query_str'], req.params['data'], true)
-        .then(result => {
-            // Parse for client
-            var response = new MiddleResponse(result);
-            console.log(response);
-            res.send(response);
-        })
-        .catch(error => {
-            var badRequest = new errors.BadRequestError({
-                info: {
-                    params: req.params,
-                    error: error.message
-                }
-            }, error.message);
-            console.info(badRequest);
-            res.send(badRequest);
-        })
-        .then(() => {
-            return next();
-        });
+    if (req.params['query_str']) {
+        db.queryPromise(req.params['query_str'], req.params['data'], true)
+            .then(result => {
+                // Parse for client
+                var response = new MiddleResponse(result);
+                console.log(response);
+                res.send(response);
+            })
+            .catch(error => {
+                var badRequest = new errors.BadRequestError({
+                    info: {
+                        params: req.params,
+                        error: error.message
+                    }
+                }, error.message);
+                console.info(badRequest);
+                res.send(badRequest);
+            })
+            .then(() => {
+                return next();
+            });
+    } else {
+        var badRequest = new errors.BadRequestError({},
+            'field.query_str.required');
+        console.info(badRequest);
+        res.send(badRequest);
+        return next();
+    }
 });
