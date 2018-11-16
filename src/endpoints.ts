@@ -18,7 +18,6 @@ class MiddleResponse {
     }
 }
 
-console.log('hello from endpoints!');
 server.post('/qdb', (req, res, next) => {
     if (req.params['query_str']) {
         db.queryPromise(req.params['query_str'], req.params['data'], true)
