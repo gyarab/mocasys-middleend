@@ -4,8 +4,8 @@ import * as errors from 'restify-errors';
 import { QueryResult, FieldDef } from 'pg';
 
 // This class mimics what is returned from postgre,
-// but we do not want all the data to be passed.
-// Field implements FieldDef which is from pg.
+// but we do not want to pass all the data.
+// Field implements FieldDef which is from module pg.
 class MiddleResponse {
     rows: any[][];
     rowCount: number;
@@ -18,7 +18,6 @@ class MiddleResponse {
     }
 }
 
-console.log('hello from endpoints!');
 server.post('/qdb', (req, res, next) => {
     if (req.params['query_str']) {
         db.queryPromise(req.params['query_str'], req.params['data'], true)
