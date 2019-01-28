@@ -18,6 +18,11 @@ class MiddleResponse {
     }
 }
 
+let DbError = errors.makeConstructor('DbError', {
+	restCode: "DbError",
+	statusCode: 500,
+});
+
 server.post('/qdb', (req, res, next) => {
     if (req.params['query_str']) {
         db.queryPromise(req.params['query_str'], req.params['data'], true)
@@ -28,7 +33,7 @@ server.post('/qdb', (req, res, next) => {
                 res.send(response);
             })
             .catch(error => {
-                var badRequest = new errors.BadRequestError({
+                var badRequest = new DbError({
                     info: {
                         params: req.params,
                         error: error.message
