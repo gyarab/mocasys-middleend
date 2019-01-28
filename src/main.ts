@@ -1,6 +1,8 @@
 import * as restify from 'restify';
 import * as corsMiddleware from 'restify-cors-middleware';
+import * as config from 'config';
 
+const serverConfig = config.get('server');
 export const server = restify.createServer();
 
 export function isDev() {
@@ -8,7 +10,7 @@ export function isDev() {
 }
 
 const cors = corsMiddleware({
-    origins: ['*'], // TODO: Change before releasing
+    origins: serverConfig['origins'],
     allowHeaders: ['API-Token'],
     exposeHeaders: ['API-Token-Expiry']
 });
@@ -29,6 +31,6 @@ server.get('/ping', (req, res, next) => {
 
 import './endpoints'
 
-server.listen(8080, 'localhost', () => {
-    console.log('INFO: Node app is running at localhost:8080');
+server.listen(serverConfig['port'], 'localhost', () => {
+    console.log(`INFO: Node app is running at localhost:${serverConfig['port']}`);
 });

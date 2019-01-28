@@ -7,5 +7,9 @@
         "database": "mocasys_0",
         "max": "1"
     },
+    "server": {
+        "port": 8000,
+        "origins": ["*"]
+    },
     "_desc": "Local development config."
 }
