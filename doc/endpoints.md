@@ -3,7 +3,7 @@
 
 ## GET /ping
 
-This endpoints server as availability check.
+This endpoints server as an availability check.
 
 ```
 HTTP/1.1 200 OK
@@ -14,9 +14,9 @@ ping
 
 ## POST /qdb
 
-Post a json to get data from Postgre.
+Post a json to get data from Postgres.
 
-### Request json body
+### Request's json body
 
 Without additional data:
 ```json
@@ -76,6 +76,19 @@ Errors have the following structure:
 }
 ```
 
-This error pops up when the /qdb does not receive the query_str param.
-If there is an SQL error, the message field contains the error's description.
-The code field corresponds to the returned HTTP status.
+This error is returned when the endpoint does not receive the query_str param.
+The code field corresponds to the returned HTTP status unless there is
+an error with the database(query syntax, nonexistent table, bad connection etc.),
+in that case, the code field contains 'DbError' instead.
+
+```json
+{
+    "code": "DbError",
+    "message": "relation \"table_name\" does not exist"
+}
+
+{
+    "code": "DbError",
+    "message": "connect ECONNREFUSED 127.0.0.1:5432"
+}
+```
