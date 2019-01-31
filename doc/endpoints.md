@@ -1,5 +1,5 @@
 
-# Endpoints of Middleend of Mocasys
+# Endpoints of The Middleend
 
 ## GET /ping
 
