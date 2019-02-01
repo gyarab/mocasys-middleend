@@ -35,17 +35,15 @@ server.post('/qdb', (req, res, next) => {
                 res.send(response);
             })
             .catch(error => {
-                let badRequest = new DbError({
+                let dbError = new DbError({
                     info: {
                         params: req.params,
                         error: error.message
                     }
                 }, error.message);
-                res.send(badRequest);
+                res.send(dbError);
             })
-            .then(() => {
-                return next();
-            });
+            .then(next);
     } else {
         let badRequest = new errors.BadRequestError({}, 'param.query_str.required');
         res.send(badRequest);
@@ -65,7 +63,6 @@ server.get('/auth', (req, res, next) => {
     return next();
 });
 
-// TODO: Handle Errors
 // TODO: Send Auth-Token on success
 server.post('/auth/password', (req, res, next) => {
     if (!serverConfig['authentication']['password']) {
@@ -74,16 +71,29 @@ server.post('/auth/password', (req, res, next) => {
     }
     if (req.params['username'] && req.params['password']) {
         // Fetch db
-        dbHelpers.userPasswordHash(req.params['username'], (err: Error, result: pg.QueryResult) => {
-            let saltDerivedKey = result.rows[0][0].split(':');
-            let salt = Buffer.from(saltDerivedKey[0], 'hex');
-            let derivedKey = Buffer.from(saltDerivedKey[1], 'hex');
-            // Verify
-            authentication.verifyHashSalt(req.params['password'], salt, derivedKey, (result: boolean) => {
-                res.send({ success: result });
+        dbHelpers.userPasswordHash(req.params['username'])
+            .then(result => {
+                let saltDerivedKey = result.rows[0][0].split(':');
+                let salt = Buffer.from(saltDerivedKey[0], 'hex');
+                let derivedKey = Buffer.from(saltDerivedKey[1], 'hex');
+                // Verify
+                authentication.verifyHashSalt(req.params['password'], salt, derivedKey,
+                    (result: boolean) => {
+                        res.send({ success: result });
+                        return next();
+                    }
+                );
+            })
+            .catch(error => {
+                let dbError = new DbError({
+                    info: {
+                        params: req.params,
+                        error: error.message
+                    }
+                }, error.message);
+                res.send(dbError);
                 return next();
             });
-        });
     } else {
         var messages = [];
         if (!req.params['username']) messages.push('param.username.required');
