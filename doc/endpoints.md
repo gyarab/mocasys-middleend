@@ -72,7 +72,7 @@ Errors have the following structure:
 ```json
 {
     "code": "BadRequest",
-    "message": "field.query_str.required"
+    "message": "param.query_str.required"
 }
 ```
 
