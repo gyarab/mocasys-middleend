@@ -1,9 +1,9 @@
 
-# Endpoints of Middleend of Mocasys
+# Endpoints of The Middleend
 
 ## GET /ping
 
-This endpoints server as availability check.
+This endpoint serves as an availability check.
 
 ```
 HTTP/1.1 200 OK
@@ -12,20 +12,34 @@ Content-Type: text/plain
 ping
 ```
 
+
 ## POST /qdb
 
-Post a json to get data from Postgre.
+Query Postgres DB.
 
-### Request json body
+### Request
 
-Without additional data:
+This endpoints requires that the user is authenticated,
+otherwise 401 Unauthorized is returned.
+Authentication is done by sending a *Session Token* in
+the Authorization header and scheme *Token*.
+Client can obtain the *Session Token* by successfully
+authenticating using **/auth/<method>**.
+
+```
+Authorization: Token <initialization vector>.<body>.<createdAt>.<hmac>
+```
+
+Query without additional data:
+
 ```json
 {
     "query_str": "SELECT * FROM table;" // This field is required
 }
 ```
 
-With additional data:
+Query with additional data:
+
 ```json
 {
     "query_str": "SELECT * FROM table WHERE id = $1 OR id = $2;",
@@ -68,14 +82,106 @@ With additional data:
 
 ### Errors
 
-Errors have the following structure:
 ```json
 {
     "code": "BadRequest",
-    "message": "field.query_str.required"
+    "message": "param.query_str.required"
 }
 ```
 
-This error pops up when the /qdb does not receive the query_str param.
-If there is an SQL error, the message field contains the error's description.
-The code field corresponds to the returned HTTP status.
+This error is returned when the endpoint does not receive the *query_str* param.
+The code field corresponds to the returned HTTP status unless there is
+an error with the database (query syntax, nonexistent table, bad connection etc.),
+in that case, the code field contains *DbError* instead.
+
+```json
+{
+    "code": "DbError",
+    "message": "relation \"table_name\" does not exist"
+}
+
+{
+    "code": "DbError",
+    "message": "connect ECONNREFUSED 127.0.0.1:5432"
+}
+```
+
+
+## GET /auth
+
+Returns all authentication methods and their availability.
+
+### Response
+
+```json
+{
+  "password": {
+    "enabled": true,
+    "url": "/auth/password"
+  },
+  "google": {
+    "enabled": false,
+    "url": "/auth/google"
+  }
+}
+```
+
+When *enabled=false*, POST to these authentication endpoints returns
+
+```json
+{
+  "code": "BadRequest",
+  "message": "auth.<method>.disabled"
+}
+```
+
+And when not implemented:
+
+```json
+{
+  "code": "BadRequest",
+  "message": "auth.<method>.notImplemented"
+}
+```
+
+
+# POST /auth/password
+
+Authentication using a password.
+
+### Request
+
+Both fields are required.
+```json
+{
+    "username": "tester1",
+    "password": "1234567890"
+}
+```
+
+### Response
+
+When successful 168 character long *Session Token* is returned:
+
+```json
+{
+    "sessionToken": "<initialization vector>.<body>.<createdAt>.<hmac>"
+}
+```
+
+### Errors
+
+```json
+{
+  "code": "BadRequest",
+  "message": "auth.password.failed"
+}
+```
+
+This includes cases when there is any *DbError*
+since this is not a user query (the user was not found etc.).
+
+
+## POST /auth/google - **Not implemented yet.**
+
+Authentication using Google+.

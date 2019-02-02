@@ -3,9 +3,21 @@
         "host": "localhost",
         "port": 5432,
         "user": "postgres",
-        "password": "+mo1Z'8lI4w~PrmnKh5B@\\_M)e}PRS",
+        "password": "1234567890",
         "database": "mocasys_0",
         "max": "1"
+    },
+    "server": {
+        "port": 8000,
+        "origins": [
+            "*"
+        ],
+        "logRequests": true,
+        "sessionSecret": "5b3e43396e9dc11a067d3031c0de06a30ba6c",
+        "authentication": {
+            "password": true,
+            "google": true
+        }
     },
     "_desc": "Local development config."
 }
