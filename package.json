@@ -25,7 +25,8 @@
     "restify-clients": "^2.6.3",
     "restify-cors-middleware": "^1.1.1",
     "restify-errors": "^6.1.1",
-    "restify-plugins": "^1.6.0"
+    "restify-plugins": "^1.6.0",
+    "restify-router": "^0.5.1"
   },
   "devDependencies": {
     "jest": "^23.6.0",

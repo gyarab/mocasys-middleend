@@ -1,7 +1,6 @@
 import { hashSalt, verifyHashSalt } from './password';
 import { sessionToken, verifySessionToken } from './sessionToken';
 import { server, serverConfig } from '..';
-import * as assert from 'assert';
 
 server.use((req, res, next) => {
     if (req.headers['authorization']) {
@@ -25,6 +24,7 @@ export { hashSalt, verifyHashSalt, sessionToken, verifySessionToken };
 
 /* Password generator
 {
+    import * as assert from 'assert';
     let password = '1234567890';
     hashSalt(password, (salt: Buffer, derivedKey: Buffer) => {
         verifyHashSalt(password, salt, derivedKey, (result) => {
