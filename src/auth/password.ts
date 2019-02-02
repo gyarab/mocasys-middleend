@@ -1,8 +1,4 @@
-// Authentication endpoints are located in endpoints.ts
-// This file contains verifications and such
-import * as assert from 'assert';
 import * as crypto from 'crypto';
-import { server } from './main';
 
 export function hashSalt(password: string, callback: (salt: Buffer, derivedKey: Buffer) => void) {
     crypto.randomBytes(32, (err: Error, salt: Buffer) => {
@@ -17,18 +13,3 @@ export function verifyHashSalt(password: string, salt: Buffer, derivedKey: Buffe
         callback(derivedKey.compare(derivedKey2) == 0);
     });
 }
-
-// Verify that *hashSalt* and *verifyHashSalt* use the same settings.
-{
-    let password = crypto.randomBytes(10).toString('hex');
-    hashSalt(password, (salt: Buffer, derivedKey: Buffer) => {
-        verifyHashSalt(password, salt, derivedKey, (result: boolean) => {
-            assert(result, 'Password hash-salting functions use different settings!');
-        })
-    });
-}
-
-// Authentication
-server.use((req, res, next) => {
-    return next();
-});

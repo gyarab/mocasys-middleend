@@ -21,13 +21,12 @@ server.use(cors.actual);
 server.use(restify.plugins.jsonBodyParser({ mapParams: true }));
 server.use(restify.plugins.acceptParser(server.acceptable));
 server.use(restify.plugins.queryParser({ mapParams: true }));
-server.use(restify.plugins.authorizationParser());
 
-import './authentication'
+import './auth'
 
 if (serverConfig['logRequests']) {
     server.use((req, res, next) => {
-        console.log(req.headers);
+        //console.log(req.headers);
         return next();
     });
 }
