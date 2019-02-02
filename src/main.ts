@@ -1,6 +1,6 @@
-import * as restify from 'restify';
-import * as corsMiddleware from 'restify-cors-middleware';
 import * as config from 'config';
+import * as corsMiddleware from 'restify-cors-middleware';
+import * as restify from 'restify';
 
 export const serverConfig = config.get('server');
 export const server = restify.createServer();
@@ -15,8 +15,9 @@ const cors = corsMiddleware({
     exposeHeaders: ['API-Token-Expiry']
 });
 
-server.use(cors.actual);
 server.pre(restify.pre.sanitizePath());
+server.pre(cors.preflight);
+server.use(cors.actual);
 server.use(restify.plugins.jsonBodyParser({ mapParams: true }));
 server.use(restify.plugins.acceptParser(server.acceptable));
 server.use(restify.plugins.queryParser({ mapParams: true }));
@@ -26,7 +27,7 @@ import './authentication'
 
 if (serverConfig['logRequests']) {
     server.use((req, res, next) => {
-        console.log(req);
+        console.log(req.headers);
         return next();
     });
 }

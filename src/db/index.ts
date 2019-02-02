@@ -1,5 +1,5 @@
-import * as pg from 'pg';
 import * as config from 'config';
+import * as pg from 'pg';
 
 const pgConfig = config.get('db');
 export const pool = new pg.Pool(pgConfig);

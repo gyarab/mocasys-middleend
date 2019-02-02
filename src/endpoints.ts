@@ -1,10 +1,10 @@
-import { server, serverConfig } from './main';
-import * as db from './db';
+import * as assert from 'assert'
 import * as errors from 'restify-errors';
 import * as pg from 'pg';
 import * as authentication from './authentication';
-import * as assert from 'assert'
+import * as db from './db';
 import * as dbHelpers from './db/helpers';
+import { server, serverConfig } from './main';
 
 // This class mimics what is returned from postgre,
 // but we do not want to pass all the data.

@@ -1,6 +1,5 @@
 
 import * as db from './index';
-import * as pg from 'pg';
 
 export function userPasswordHash(username: string) {
     return db.queryPromise('SELECT user_password_data.pw_hash ' +
