@@ -1,6 +1,6 @@
 import { hashSalt, verifyHashSalt } from './password';
 import { sessionToken, verifySessionToken } from './sessionToken';
-import { server, serverConfig } from '../main';
+import { server, serverConfig } from '..';
 import * as assert from 'assert';
 
 server.use((req, res, next) => {

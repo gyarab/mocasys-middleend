@@ -4,7 +4,7 @@ import * as pg from 'pg';
 import * as auth from './auth';
 import * as db from './db';
 import * as dbHelpers from './db/helpers';
-import { server, serverConfig } from './main';
+import { server, serverConfig } from '.';
 
 // This class mimics what is returned from postgre,
 // but we do not want to pass all the data.
