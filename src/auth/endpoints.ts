@@ -37,11 +37,10 @@ authRouter.post('/password', (req, res, next) => {
     // Fetch db
     dbHelpers.userPasswordHash(req.params['username'])
         .then(sqlResult => {
-            let saltDerivedKey = sqlResult.rows[0][0].split(':');
-            let salt = Buffer.from(saltDerivedKey[0], 'hex');
-            let derivedKey = Buffer.from(saltDerivedKey[1], 'hex');
+            // If sqlResult.rowCount == 0 error is thrown and it is caught
+            let hashSalt: string = sqlResult.rows[0][0];
             // Verify
-            auth.verifyHashSalt(req.params['password'], salt, derivedKey,
+            auth.verifyHashSalt(req.params['password'], hashSalt,
                 (result: boolean) => {
                     if (result) {
                         var sessionToken = auth.createSessionToken({

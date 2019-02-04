@@ -1,15 +1,19 @@
-import * as crypto from 'crypto';
+import * as scrypt from 'scrypt';
 
-export function hashSalt(password: string, callback: (salt: Buffer, derivedKey: Buffer) => void) {
-    crypto.randomBytes(32, (err: Error, salt: Buffer) => {
-        crypto.pbkdf2(password, salt, 4096, 32, 'sha256', (err: Error, derivedKey: Buffer) => {
-            callback(salt, derivedKey);
-        });
+const scryptParams = scrypt.paramsSync(0.1);
+
+// TODO: Handle errors
+export function createHashSalt(password: string, callback: (hashSalt: string) => void) {
+    // Scrypt handles the salt internally and outputs it with the derived key
+    // along with the params
+    scrypt.kdf(password, scryptParams, (err: Error, hashSalt: Buffer) => {
+        callback(hashSalt.toString('hex'));
     });
 }
 
-export function verifyHashSalt(password: string, salt: Buffer, derivedKey: Buffer, callback: (result: boolean) => void) {
-    crypto.pbkdf2(password, salt, 4096, 32, 'sha256', (err: Error, derivedKey2: Buffer) => {
-        callback(derivedKey.compare(derivedKey2) == 0);
+// TODO: Handle errors
+export function verifyHashSalt(password: string, hashSalt: string, callback: (result: boolean) => void) {
+    scrypt.verifyKdf(Buffer.from(hashSalt, 'hex'), password, (err: Error, result: boolean) => {
+        callback(result);
     });
 }
