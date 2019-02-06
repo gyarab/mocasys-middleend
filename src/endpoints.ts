@@ -34,16 +34,11 @@ server.post('/qdb', (req, res, next) => {
         res.send(new errors.BadRequestError({}, 'param.query_str.required'));
         return next();
     }
-    db.userQuery(req['sessionToken']['data']['id'], req.params['query_str'], req.params['data'],
+    db.qdbQuery(req['sessionToken']['data']['id'], req.params['query_str'], req.params['data'],
         (error: Error, result: pg.QueryResult) => {
             if (error) {
-                let dbError = new DbError({
-                    info: {
-                        params: req.params,
-                        error: error.message
-                    }
-                }, error.message);
-                res.send(dbError);
+                // The error is most likely the client's fault
+                res.send(new errors.BadRequestError(error.message));
             } else {
                 // Parse for client
                 res.send(new MiddleResponse(result));

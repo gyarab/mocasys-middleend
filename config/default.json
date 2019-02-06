@@ -1,11 +1,21 @@
 {
     "db": {
-        "host": "localhost",
-        "port": 5432,
-        "user": "postgres",
-        "password": "1234567890",
-        "database": "mocasys_0",
-        "max": "1"
+        "middleend": {
+            "host": "localhost",
+            "port": 5432,
+            "user": "postgres",
+            "password": "1234567890",
+            "database": "mocasys_0",
+            "max": "1"
+        },
+        "qdb": {
+            "host": "localhost",
+            "port": 5432,
+            "user": "uptest",
+            "password": "uptestpw",
+            "database": "mocasys_0",
+            "max": "1"
+        }
     },
     "server": {
         "port": 8000,
