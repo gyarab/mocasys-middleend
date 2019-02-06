@@ -34,45 +34,48 @@ export function queryPromise(query_str: string, data: any[], rowMode: boolean = 
 
 export function qdbQuery(user_id: number, query_str: string, data: any[],
     callback: (err: Error, result: pg.QueryResult) => void, rowMode: boolean = true): void {
-    // Secret for session_user_set
+    // Secret for session_user_set.
     crypto.randomBytes(16, (err: Error, buff: Buffer) => {
         if (err) {
             callback(err, null);
             return;
         }
         let loginKey = buff.toString('hex');
-        // Checkout a client
-        qdbPool.connect((err: Error, client: pg.PoolClient, done: (release?: any) => void) => {
+
+        // Checkout a client.
+        qdbPool.connect((err: Error, client: pg.PoolClient, releaseClient: (release?: any) => void) => {
             if (err) {
+                releaseClient();
                 callback(err, null);
                 return;
             }
-            // Select the user
+
+            // Login.
             client.query('SELECT session_user_set($1, $2);', [user_id, loginKey],
-                (err: Error, sqlResult: pg.QueryResult) => {
+                (err: Error, loginResult: pg.QueryResult) => {
                     if (err) {
-                        done();
+                        releaseClient();
                         callback(err, null);
                         return;
                     }
-                    // Execute user's query
+
+                    // Henceforth, we are logged in.
+                    // Execute user's query.
                     let userSetQuery = makeQuery(query_str, data, rowMode);;
-                    client.query(userSetQuery, (err: Error, result: pg.QueryResult) => {
+                    client.query(userSetQuery, (err: Error, sqlResult: pg.QueryResult) => {
+                        // Logout.
+                        client.query('SELECT session_logout($1);', [loginKey],
+                            (err: Error, logoutResult: pg.QueryResult) => {
+                                releaseClient();
+                                if (err) console.error(err);
+                            });
+
                         if (err) {
-                            done();
                             callback(err, null);
-                            return;
+                        } else {
+                            // Pass the results back.
+                            callback(err, sqlResult);
                         }
-                        // Logout
-                        client.query('SELECT session_logout($1);', [loginKey], (err: Error, result: pg.QueryResult) => {
-                            done();
-                            if (err) {
-                                callback(err, null);
-                                return;
-                            }
-                            // Pass the results back
-                            callback(err, result);
-                        })
                     });
                 });
         })
