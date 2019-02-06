@@ -1,8 +1,14 @@
 import * as config from 'config';
+import * as crypto from 'crypto';
 import * as pg from 'pg';
 
 const pgConfig = config.get('db');
-const pool = new pg.Pool(pgConfig);
+
+const middleendConfig = pgConfig['middleend'];
+const qdbConfig = pgConfig['qdb'];
+
+const middleendPool = new pg.Pool(middleendConfig);
+const qdbPool = new pg.Pool(qdbConfig);
 
 function makeQuery(query_str: string, data: any[], rowMode: boolean): pg.QueryConfig {
     let query: pg.QueryConfig = {
@@ -18,25 +24,57 @@ function makeQuery(query_str: string, data: any[], rowMode: boolean): pg.QueryCo
 export function query(query_str: string, data: any[],
     callback: (err: Error, result: pg.QueryResult) => void, rowMode: boolean = true): pg.Query {
     let query = makeQuery(query_str, data, rowMode);
-    return pool.query(query, callback);
+    return middleendPool.query(query, callback);
 }
 
 export function queryPromise(query_str: string, data: any[], rowMode: boolean = true): Promise<pg.QueryResult> {
     let query = makeQuery(query_str, data, rowMode);
-    return pool.query(query);
+    return middleendPool.query(query);
 }
 
-export function userQuery(user_id: number, query_str: string, data: any[],
+export function qdbQuery(user_id: number, query_str: string, data: any[],
     callback: (err: Error, result: pg.QueryResult) => void, rowMode: boolean = true): void {
-    let client = new pg.Client(pgConfig);
-    client.connect();
-    let userSetQuery = makeQuery(`SELECT session_user_set($1);`, [3], true);
-    client.query(userSetQuery, (err: Error, result: pg.QueryResult) => {
+    // Secret for session_user_set
+    crypto.randomBytes(16, (err: Error, buff: Buffer) => {
         if (err) {
             callback(err, null);
-        } else {
-            let query = makeQuery(query_str, data, rowMode);
-            client.query(query, callback);
+            return;
         }
+        let loginKey = buff.toString('hex');
+        // Checkout a client
+        qdbPool.connect((err: Error, client: pg.PoolClient, done: (release?: any) => void) => {
+            if (err) {
+                callback(err, null);
+                return;
+            }
+            // Select the user
+            client.query('SELECT session_user_set($1, $2);', [user_id, loginKey],
+                (err: Error, sqlResult: pg.QueryResult) => {
+                    if (err) {
+                        done();
+                        callback(err, null);
+                        return;
+                    }
+                    // Execute user's query
+                    let userSetQuery = makeQuery(query_str, data, rowMode);;
+                    client.query(userSetQuery, (err: Error, result: pg.QueryResult) => {
+                        if (err) {
+                            done();
+                            callback(err, null);
+                            return;
+                        }
+                        // Logout
+                        client.query('SELECT session_logout($1);', [loginKey], (err: Error, result: pg.QueryResult) => {
+                            done();
+                            if (err) {
+                                callback(err, null);
+                                return;
+                            }
+                            // Pass the results back
+                            callback(err, result);
+                        })
+                    });
+                });
+        })
     });
 }
