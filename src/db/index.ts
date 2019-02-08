@@ -61,9 +61,9 @@ export function qdbQuery(user_id: number, query_str: string, data: any[],
 
                     // Henceforth, we are logged in.
                     // Execute user's query.
-                    let userSetQuery = makeQuery(query_str, data, rowMode);;
+                    let userSetQuery = makeQuery(query_str, data, rowMode);
                     client.query(userSetQuery, (err: Error, sqlResult: pg.QueryResult) => {
-                        // Logout.
+                        // Logout regardless of the query's success.
                         client.query('SELECT session_logout($1);', [loginKey],
                             (err: Error, logoutResult: pg.QueryResult) => {
                                 releaseClient();
@@ -71,6 +71,7 @@ export function qdbQuery(user_id: number, query_str: string, data: any[],
                             });
 
                         if (err) {
+                            // Usually a permission error.
                             callback(err, null);
                         } else {
                             // Pass the results back.
