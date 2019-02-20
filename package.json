@@ -4,8 +4,7 @@
   "description": "Middleend of The Modern Canteen System",
   "main": "out/main.js",
   "scripts": {
-    "test": "",
-    "test:debug": "",
+    "test": "tsc; NODE_ENV=test nyc mocha test/*",
     "compile": "tsc",
     "start": "npm run compile && NODE_ENV=development node out",
     "dev": "./node_modules/nodemon/bin/nodemon.js"
