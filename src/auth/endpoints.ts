@@ -43,7 +43,7 @@ authRouter.post('/password', (req, res, next) => {
             auth.verifyHashSalt(req.params['password'], hashSalt,
                 (result: boolean) => {
                     if (result) {
-                        var sessionToken = auth.createSessionToken({
+                        let sessionToken = auth.createSessionToken({
                             id: sqlResult.rows[0][1],
                             username: sqlResult.rows[0][2],
                             method: 'password'
