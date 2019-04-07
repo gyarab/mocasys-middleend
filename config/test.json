@@ -1,0 +1,33 @@
+{
+    "db": {
+        "middleend": {
+            "host": "localhost",
+            "port": 5432,
+            "user": "postgres",
+            "password": "1234567890",
+            "database": "mocasys_0_test",
+            "max": "1"
+        },
+        "qdb": {
+            "host": "localhost",
+            "port": 5432,
+            "user": "uptest",
+            "password": "uptestpw",
+            "database": "mocasys_0_test",
+            "max": "1"
+        }
+    },
+    "server": {
+        "port": 8001,
+        "origins": [
+            "*"
+        ],
+        "logRequests": true,
+        "sessionSecret": "5b3e43396e9dc11a067d3031c0de06a30ba6c",
+        "authentication": {
+            "password": true,
+            "google": true
+        }
+    },
+    "_desc": "Local development config."
+}

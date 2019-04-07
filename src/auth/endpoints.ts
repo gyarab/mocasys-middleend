@@ -41,26 +41,27 @@ authRouter.post('/password', (req, res, next) => {
             let hashSalt: string = sqlResult.rows[0][0];
             // Verify
             auth.verifyHashSalt(req.params['password'], hashSalt,
-                (result: boolean) => {
-                    if (result) {
-                        var sessionToken = auth.createSessionToken({
+                (err: Error, result: boolean) => {
+                    if (err) {
+                        res.send(new errors.InternalServerError({}, 'auth.password.failed'));
+                    } else if (result) {
+                        let sessionToken = auth.createSessionToken({
                             id: sqlResult.rows[0][1],
                             username: sqlResult.rows[0][2],
-                            method: 'password'
+                            method: 'password',
                         }, new Date().getTime());
                         res.send({
-                            sessionToken: sessionToken
+                            sessionToken: sessionToken,
                         });
                     } else {
                         res.send(new errors.BadRequestError({}, 'auth.password.failed'));
                     }
+                    return next();
                 }
             );
         })
         .catch(error => {
             res.send(new errors.BadRequestError({}, 'auth.password.failed'));
-        }).then(() => {
-            return next();
         });
 });
 

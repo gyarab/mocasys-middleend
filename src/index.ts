@@ -22,7 +22,7 @@ server.use(restify.plugins.jsonBodyParser({ mapParams: true }));
 server.use(restify.plugins.acceptParser(server.acceptable));
 server.use(restify.plugins.queryParser({ mapParams: true }));
 
-import './auth'
+import './auth';
 
 if (serverConfig['logRequests']) {
     server.use((req, res, next) => {
@@ -31,7 +31,7 @@ if (serverConfig['logRequests']) {
     });
 }
 
-import './endpoints'
+import './endpoints';
 
 server.listen(serverConfig['port'], 'localhost', () => {
     console.log(`INFO: Node app is running at localhost:${serverConfig['port']}`);

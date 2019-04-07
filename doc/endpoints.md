@@ -96,12 +96,12 @@ in that case, the code field contains *DbError* instead.
 
 ```json
 {
-    "code": "DbError",
+    "code": "BadRequest",
     "message": "relation \"table_name\" does not exist"
 }
 
 {
-    "code": "DbError",
+    "code": "BadRequest",
     "message": "connect ECONNREFUSED 127.0.0.1:5432"
 }
 ```
