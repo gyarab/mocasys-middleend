@@ -1,7 +1,7 @@
 import * as errors from 'restify-errors';
 import * as pg from 'pg';
 import * as db from './db';
-import { server, serverConfig } from '.';
+import { MiddleResponse } from './middleResponse';
 import { authRouter } from './auth/endpoints';
 import { Router } from 'restify-router';
 
@@ -10,17 +10,6 @@ export const masterRouter = new Router();
 // This class mimics what is returned from postgres,
 // but we do not want to pass all the data.
 // Field implements FieldDef which is from module pg.
-class MiddleResponse {
-    rows: any[][];
-    rowCount: number;
-    fields: pg.FieldDef[];
-
-    constructor(result: pg.QueryResult) {
-        this.rows = result.rows;
-        this.rowCount = result.rowCount;
-        this.fields = result.fields;
-    }
-}
 
 let DbError = errors.makeConstructor('DbError', {
     restCode: "DbError",

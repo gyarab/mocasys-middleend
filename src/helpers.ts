@@ -26,5 +26,5 @@ export function sendErrors(res, errMessages) {
 
 export function sendErrorsNext(res, errMessages, next) {
     sendErrors(res, errMessages);
-    return next();
+    return next(false);
 }

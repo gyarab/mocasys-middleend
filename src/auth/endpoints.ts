@@ -1,10 +1,10 @@
-import * as assert from 'assert';
 import * as errors from 'restify-errors';
 import { Router } from 'restify-router';
 import { serverConfig } from '..';
 import * as auth from '.';
 import * as dbHelpers from '../db/helpers';
 import * as helpers from '../helpers';
+import { MiddleResponse } from '../middleResponse';
 
 export let authRouter = new Router();
 
@@ -67,7 +67,7 @@ authRouter.post('/password', preAuthGen('password', ['username', 'password']), (
         })
         .catch(error => {
             console.error(error);
-            res.send(new errors.InternalServerError({}, 'auth.password.failed'));
+            res.send(new errors.BadRequestError({}, 'auth.password.failed'));
         });
 });
 
@@ -76,7 +76,20 @@ authRouter.post('/google', preAuthGen('google', []), (req, res, next) => {
     return next();
 });
 
-authRouter.post('/reader', preAuthGen('reader', []), (req, res, next) => {
-    res.send(new errors.BadRequestError({}, 'auth.reader.notImplemented'));
+// TODO: Move somewhere else?
+authRouter.post('/reader', preAuthGen('reader', ['card_id', 'secret_key']), (req, res, next) => {
+    dbHelpers.cardIdAndSecretKey(req.params.card_id, req.params.secret_key)
+        .then(sqlResult => {
+            if (sqlResult.rowCount === 0) {
+                res.send(new errors.NotFoundError({}));
+            } else {
+                // Parse for client
+                res.send(new MiddleResponse(sqlResult));
+            }
+        })
+        .catch(error => {
+            console.error(error);
+            res.send(new errors.BadRequestError({}, 'auth.reader.failed'));
+        });
     return next();
 });
