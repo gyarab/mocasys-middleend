@@ -61,7 +61,8 @@ authRouter.post('/password', (req, res, next) => {
             );
         })
         .catch(error => {
-            res.send(new errors.BadRequestError({}, 'auth.password.failed'));
+            console.error(error);
+            res.send(new errors.InternalServerError({}, 'auth.password.failed'));
         });
 });
 
