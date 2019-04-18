@@ -26,8 +26,8 @@ export { createHashSalt, verifyHashSalt, sessionToken, verifySessionToken };
 import * as assert from 'assert';
 {
     let password = '0987654321';
-    createHashSalt(password, (hashSalt: string) => {
-        verifyHashSalt(password, hashSalt, (result) => {
+    createHashSalt(password, (err: Error, hashSalt: string) => {
+        verifyHashSalt(password, hashSalt, (err: Error, result: boolean) => {
             assert(result);
         })
         console.log(`${password}::${hashSalt}`);

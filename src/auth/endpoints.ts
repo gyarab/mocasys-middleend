@@ -1,11 +1,30 @@
-import * as assert from 'assert';
 import * as errors from 'restify-errors';
 import { Router } from 'restify-router';
 import { serverConfig } from '..';
 import * as auth from '.';
 import * as dbHelpers from '../db/helpers';
+import * as helpers from '../helpers';
+import { MiddleResponse } from '../middleResponse';
 
 export let authRouter = new Router();
+
+function preAuthGen(methodName: string, requiredParams: Array<string>) {
+    function preAuth(req, res, next) {
+        if (!serverConfig['authentication'][methodName]) {
+            res.send(new errors.BadRequestError({}, `auth.${methodName}.disabled`));
+            return next(false);
+        } else if (req['sessionToken']) {
+            res.send(new errors.BadRequestError({}, 'auth.alreadyAuthorized'))
+            return next(false);
+        }
+        let errMessages = helpers.requireParams(req.params, 'param', true, requiredParams);
+        if (errMessages.length > 0) {
+            return helpers.sendErrorsNext(res, errMessages, next);
+        }
+        return next();
+    }
+    return preAuth;
+}
 
 authRouter.get('', (req, res, next) => {
     let response = {};
@@ -19,21 +38,7 @@ authRouter.get('', (req, res, next) => {
     return next();
 });
 
-authRouter.post('/password', (req, res, next) => {
-    if (!serverConfig['authentication']['password']) {
-        res.send(new errors.BadRequestError({}, 'auth.password.disabled'));
-        return next();
-    } else if (req['sessionToken']) {
-        res.send(new errors.BadRequestError({}, 'auth.already.authorized'))
-        return next();
-    } else if (!req.params['username'] || !req.params['password']) {
-        var messages = [];
-        if (!req.params['username']) messages.push('param.username.required');
-        if (!req.params['password']) messages.push('param.password.required');
-        assert(messages.length > 0);
-        res.send(new errors.BadRequestError({}, messages.join(',')));
-        return next();
-    }
+authRouter.post('/password', preAuthGen('password', ['username', 'password']), (req, res, next) => {
     // Fetch db
     dbHelpers.userPasswordHash(req.params['username'])
         .then(sqlResult => {
@@ -61,15 +66,30 @@ authRouter.post('/password', (req, res, next) => {
             );
         })
         .catch(error => {
+            console.error(error);
             res.send(new errors.BadRequestError({}, 'auth.password.failed'));
         });
 });
 
-authRouter.post('/google', (req, res, next) => {
-    if (!serverConfig['authentication']['google']) {
-        res.send(new errors.BadRequestError({}, 'auth.google.disabled'));
-    } else {
-        res.send(new errors.BadRequestError({}, 'auth.google.notImplemented'));
-    }
+authRouter.post('/google', preAuthGen('google', []), (req, res, next) => {
+    res.send(new errors.BadRequestError({}, 'auth.google.notImplemented'));
+    return next();
+});
+
+// TODO: Move somewhere else?
+authRouter.post('/reader', preAuthGen('reader', ['card_id', 'secret_key']), (req, res, next) => {
+    dbHelpers.cardIdAndSecretKey(req.params.card_id, req.params.secret_key)
+        .then(sqlResult => {
+            if (sqlResult.rowCount === 0) {
+                res.send(new errors.NotFoundError({}));
+            } else {
+                // Parse for client
+                res.send(new MiddleResponse(sqlResult));
+            }
+        })
+        .catch(error => {
+            console.error(error);
+            res.send(new errors.BadRequestError({}, 'auth.reader.failed'));
+        });
     return next();
 });

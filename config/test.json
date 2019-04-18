@@ -27,7 +27,8 @@
         "authentication": {
             "password": true,
             "google": true
-        }
+        },
+        "rootPath": ""
     },
     "_desc": "Local development config."
 }

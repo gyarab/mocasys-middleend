@@ -26,8 +26,10 @@
         "sessionSecret": "5b3e43396e9dc11a067d3031c0de06a30ba6c",
         "authentication": {
             "password": true,
-            "google": true
-        }
+            "google": true,
+            "reader": true
+        },
+        "rootPath": ""
     },
     "_desc": "Local development config."
 }
