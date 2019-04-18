@@ -7,6 +7,20 @@ import * as dbHelpers from '../db/helpers';
 
 export let authRouter = new Router();
 
+function preAuthGen(methodName: String) {
+    function preAuth(req, res, next) {
+        if (!serverConfig['authentication'][methodName]) {
+            res.send(new errors.BadRequestError({}, `auth.${methodName}.disabled`));
+            return next(false);
+        } else if (req['sessionToken']) {
+            res.send(new errors.BadRequestError({}, 'auth.alreadyAuthorized'))
+            return next(false);
+        }
+        return next();
+    }
+    return preAuth;
+}
+
 authRouter.get('', (req, res, next) => {
     let response = {};
     for (let method in serverConfig['authentication']) {
@@ -19,14 +33,8 @@ authRouter.get('', (req, res, next) => {
     return next();
 });
 
-authRouter.post('/password', (req, res, next) => {
-    if (!serverConfig['authentication']['password']) {
-        res.send(new errors.BadRequestError({}, 'auth.password.disabled'));
-        return next();
-    } else if (req['sessionToken']) {
-        res.send(new errors.BadRequestError({}, 'auth.already.authorized'))
-        return next();
-    } else if (!req.params['username'] || !req.params['password']) {
+authRouter.post('/password', preAuthGen('password'), (req, res, next) => {
+    if (!req.params['username'] || !req.params['password']) {
         var messages = [];
         if (!req.params['username']) messages.push('param.username.required');
         if (!req.params['password']) messages.push('param.password.required');
@@ -66,11 +74,12 @@ authRouter.post('/password', (req, res, next) => {
         });
 });
 
-authRouter.post('/google', (req, res, next) => {
-    if (!serverConfig['authentication']['google']) {
-        res.send(new errors.BadRequestError({}, 'auth.google.disabled'));
-    } else {
-        res.send(new errors.BadRequestError({}, 'auth.google.notImplemented'));
-    }
+authRouter.post('/google', preAuthGen('google'), (req, res, next) => {
+    res.send(new errors.BadRequestError({}, 'auth.google.notImplemented'));
+    return next();
+});
+
+authRouter.post('/reader', preAuthGen('reader'), (req, res, next) => {
+    res.send(new errors.BadRequestError({}, 'auth.reader.notImplemented'));
     return next();
 });
