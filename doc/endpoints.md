@@ -34,7 +34,7 @@ Query without additional data:
 
 ```json
 {
-    "query_str": "SELECT * FROM table;" // This field is required
+  "query_str": "SELECT * FROM table;" // This field is required
 }
 ```
 
@@ -42,8 +42,8 @@ Query with additional data:
 
 ```json
 {
-    "query_str": "SELECT * FROM table WHERE id = $1 OR id = $2;",
-    "data": [42, 76] // When no data is required this field is optional.
+  "query_str": "SELECT * FROM table WHERE id = $1 OR id = $2;",
+  "data": [42, 76] // When no data is required this field is optional.
 }
 ```
 
@@ -51,32 +51,26 @@ Query with additional data:
 
 ```json
 {
-    "rows": [
-        [1, "Adam", "Warlock", "2014-04-08T22:00:00.000Z"],
-        [2, "Harry", "Potter", "1990-07-31T22:00:00.000Z"]
-    ],
-    "rowCount": 2,
-    "fields": [
-        {
-            "name": "id",
-            "tableID": 17249,
-            "columnID": 1,
-            "dataTypeID": 23,
-            "dataTypeSize": 4,
-            "dataTypeModifier": -1,
-            "format": "text"
-        },
-        // ...
-        {
-            "name": "dateBorn",
-            "tableID": 17249,
-            "columnID": 4,
-            "dataTypeID": 1082,
-            "dataTypeSize": 4,
-            "dataTypeModifier": -1,
-            "format": "text"
-        },
-    ]
+  "rows": [
+    [1, "Adam", "Warlock", "2014-04-08T22:00:00.000Z"],
+    [2, "Harry", "Potter", "1990-07-31T22:00:00.000Z"]
+  ],
+  "rowCount": 2,
+  "fields": [
+    {
+      "name": "id",
+      "tableID": 17249,
+      "columnID": 1,
+      "dataTypeID": 23,
+      "dataTypeSize": 4,
+      "dataTypeModifier": -1,
+      "format": "text"
+    },
+    // ...
+    {
+      s"format": "text"
+    },
+  ]
 }
 ```
 
@@ -84,8 +78,8 @@ Query with additional data:
 
 ```json
 {
-    "code": "BadRequest",
-    "message": "param.query_str.required"
+  "code": "BadRequest",
+  "message": "param.query_str.required"
 }
 ```
 
@@ -96,13 +90,13 @@ in that case, the code field contains *DbError* instead.
 
 ```json
 {
-    "code": "BadRequest",
-    "message": "relation \"table_name\" does not exist"
+  "code": "BadRequest",
+  "message": "relation \"table_name\" does not exist"
 }
 
 {
-    "code": "BadRequest",
-    "message": "connect ECONNREFUSED 127.0.0.1:5432"
+  "code": "BadRequest",
+  "message": "connect ECONNREFUSED 127.0.0.1:5432"
 }
 ```
 
@@ -152,20 +146,21 @@ Authentication using a password.
 ### Request
 
 Both fields are required.
+
 ```json
 {
-    "username": "tester1",
-    "password": "1234567890"
+  "username": "tester1",
+  "password": "1234567890"
 }
 ```
 
 ### Response
 
-When successful 168 character long *Session Token* is returned:
+When successful, 168 character long *Session Token* is returned:
 
 ```json
 {
-    "sessionToken": "<initialization vector>.<body>.<createdAt>.<hmac>"
+  "sessionToken": "<initialization vector>.<body>.<createdAt>.<hmac>"
 }
 ```
 
@@ -185,3 +180,27 @@ since this is not a user query (the user was not found etc.).
 ## POST /auth/google - **Not implemented yet.**
 
 Authentication using Google+.
+
+
+## POST /auth/reader
+
+### Request
+
+```json
+{
+  "card_id": "68656c6c6f20636f6d7075746572",
+  "secret_key": "2756475707d6f63602f6c6c65686"
+}
+```
+
+The *card_id* and *secret_key* are a hexadecimal string.
+
+### Response
+
+When successful, 168 character long *Session Token* is returned:
+
+```json
+{
+  "sessionToken": "<initialization vector>.<body>.<createdAt>.<hmac>"
+}
+```
