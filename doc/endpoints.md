@@ -146,6 +146,7 @@ Authentication using a password.
 ### Request
 
 Both fields are required.
+
 ```json
 {
   "username": "tester1",
@@ -155,7 +156,7 @@ Both fields are required.
 
 ### Response
 
-When successful 168 character long *Session Token* is returned:
+When successful, 168 character long *Session Token* is returned:
 
 ```json
 {
@@ -179,3 +180,27 @@ since this is not a user query (the user was not found etc.).
 ## POST /auth/google - **Not implemented yet.**
 
 Authentication using Google+.
+
+
+## POST /auth/reader
+
+### Request
+
+```json
+{
+  "card_id": "68656c6c6f20636f6d7075746572",
+  "secret_key": "2756475707d6f63602f6c6c65686"
+}
+```
+
+The *card_id* and *secret_key* are a hexadecimal string.
+
+### Response
+
+When successful, 168 character long *Session Token* is returned:
+
+```json
+{
+  "sessionToken": "<initialization vector>.<body>.<createdAt>.<hmac>"
+}
+```
