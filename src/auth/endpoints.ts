@@ -4,7 +4,6 @@ import { serverConfig } from '..';
 import * as auth from '.';
 import * as dbHelpers from '../db/helpers';
 import * as helpers from '../helpers';
-import { MiddleResponse } from '../middleResponse';
 
 export let authRouter = new Router();
 
