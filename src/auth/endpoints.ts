@@ -4,7 +4,6 @@ import { serverConfig } from '..';
 import * as auth from '.';
 import * as dbHelpers from '../db/helpers';
 import * as helpers from '../helpers';
-import { MiddleResponse } from '../middleResponse';
 
 export let authRouter = new Router();
 
@@ -56,6 +55,7 @@ authRouter.post('/password', preAuthGen('password', ['username', 'password']), (
                         }, new Date().getTime());
                         res.send({
                             sessionToken: sessionToken,
+                            expiresIn: serverConfig['sessionTokenExpiresInMillis'],
                         });
                     } else {
                         res.send(new errors.BadRequestError({}, 'auth.password.failed'));
@@ -90,6 +90,7 @@ authRouter.post('/reader', preAuthGen('reader', ['card_id', 'secret_key']), (req
                 }, new Date().getTime());
                 res.send({
                     sessionToken: sessionToken,
+                    expiresIn: serverConfig['sessionTokenExpiresInMillis'],
                 });
             }
             return next();

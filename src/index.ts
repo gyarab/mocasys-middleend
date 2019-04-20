@@ -1,6 +1,8 @@
 import * as config from 'config';
 import * as corsMiddleware from 'restify-cors-middleware';
 import * as restify from 'restify';
+import { validateSessionToken } from './auth';
+import { masterRouter } from './endpoints';
 
 export const serverConfig = config.get('server');
 export const server = restify.createServer();
@@ -21,8 +23,7 @@ server.use(cors.actual);
 server.use(restify.plugins.jsonBodyParser({ mapParams: true }));
 server.use(restify.plugins.acceptParser(server.acceptable));
 server.use(restify.plugins.queryParser({ mapParams: true }));
-
-// import './auth';
+server.use(validateSessionToken);
 
 if (serverConfig['logRequests']) {
     server.use((req, res, next) => {
@@ -31,7 +32,6 @@ if (serverConfig['logRequests']) {
     });
 }
 
-import { masterRouter } from './endpoints';
 masterRouter.applyRoutes(server, serverConfig['rootPath']);
 
 server.listen(serverConfig['port'], 'localhost', () => {

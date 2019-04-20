@@ -139,7 +139,7 @@ And when not implemented:
 ```
 
 
-# POST /auth/password
+## POST /auth/password
 
 Authentication using a password.
 
@@ -160,9 +160,12 @@ When successful, 168 character long *Session Token* is returned:
 
 ```json
 {
-  "sessionToken": "<initialization vector>.<body>.<createdAt>.<hmac>"
+  "sessionToken": "<initialization vector>.<body>.<createdAt>.<hmac>",
+  "expiresIn": ""
 }
 ```
+
+*expiresIn* is in milliseconds after *createdAt*.
 
 ### Errors
 
@@ -175,11 +178,6 @@ When successful, 168 character long *Session Token* is returned:
 
 This includes cases when there is any *DbError*
 since this is not a user query (the user was not found etc.).
-
-
-## POST /auth/google - **Not implemented yet.**
-
-Authentication using Google+.
 
 
 ## POST /auth/reader
@@ -201,6 +199,23 @@ When successful, 168 character long *Session Token* is returned:
 
 ```json
 {
-  "sessionToken": "<initialization vector>.<body>.<createdAt>.<hmac>"
+  "sessionToken": "<initialization vector>.<body>.<createdAt>.<hmac>",
+  "expiresIn": ""
 }
 ```
+
+*expiresIn* is in milliseconds after *createdAt*.
+
+### Errors
+
+```json
+{
+  "code": "BadRequest",
+  "message": "auth.reader.failed"
+}
+```
+
+
+## POST /auth/google - **Not implemented yet.**
+
+Authentication using Google+.
