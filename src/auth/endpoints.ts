@@ -55,6 +55,7 @@ authRouter.post('/password', preAuthGen('password', ['username', 'password']), (
                         }, new Date().getTime());
                         res.send({
                             sessionToken: sessionToken,
+                            expiresIn: serverConfig['sessionTokenExpiresInMillis'],
                         });
                     } else {
                         res.send(new errors.BadRequestError({}, 'auth.password.failed'));
@@ -89,6 +90,7 @@ authRouter.post('/reader', preAuthGen('reader', ['card_id', 'secret_key']), (req
                 }, new Date().getTime());
                 res.send({
                     sessionToken: sessionToken,
+                    expiresIn: serverConfig['sessionTokenExpiresInMillis'],
                 });
             }
             return next();
