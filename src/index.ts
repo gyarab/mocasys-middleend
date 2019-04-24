@@ -13,7 +13,7 @@ export function isDev() {
 
 const cors = corsMiddleware({
     origins: serverConfig['origins'],
-    allowHeaders: ['API-Token'],
+    allowHeaders: ['Authorization'],
     exposeHeaders: ['API-Token-Expiry']
 });
 
