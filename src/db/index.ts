@@ -2,10 +2,10 @@ import * as config from 'config';
 import * as crypto from 'crypto';
 import * as pg from 'pg';
 
-const pgConfig = config.get('db');
+export const dbConfig = config.get('db');
 
-const middleendConfig = pgConfig['middleend'];
-const qdbConfig = pgConfig['qdb'];
+export const middleendConfig = dbConfig['middleend'];
+export const qdbConfig = dbConfig['qdb'];
 
 const middleendPool = new pg.Pool(middleendConfig);
 const qdbPool = new pg.Pool(qdbConfig);
