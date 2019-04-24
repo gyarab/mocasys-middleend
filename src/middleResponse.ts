@@ -2,6 +2,7 @@ import * as pg from 'pg';
 import * as renamer from './db/renamer';
 
 interface MField {
+    name: String;
     tableName: String;
     // TODO: Replace with columnName
     columnID: Number;
@@ -13,6 +14,7 @@ interface MField {
 
 function transformField(field: pg.FieldDef): MField {
     let newField = {
+        name: field.name,
         tableName: renamer.tableName(field.tableID),
         columnID: field.columnID,
         dataTypeName: renamer.typeName(field.dataTypeID),
