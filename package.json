@@ -13,7 +13,7 @@
   "license": "NA",
   "dependencies": {
     "@types/config": "0.0.34",
-    "@types/node": "^8.0.47",
+    "@types/node": "^8.10.46",
     "@types/pg": "^7.4.11",
     "@types/restify": "^5.0.6",
     "@types/restify-cors-middleware": "^1.0.1",
@@ -29,11 +29,11 @@
     "scrypt": "^6.0.3"
   },
   "devDependencies": {
-    "mocha": "^6.0.0",
+    "mocha": "^6.1.4",
     "node-mocks-http": "^1.7.3",
     "nodemon": "^1.18.9",
     "npm-license": "^0.3.3",
-    "nyc": "^13.3.0",
+    "nyc": "^14.0.0",
     "source-map-support": "^0.5.10",
     "supertest": "^3.4.2",
     "ts-node": "^7.0.1",
