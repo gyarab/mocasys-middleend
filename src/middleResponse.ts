@@ -20,11 +20,11 @@ function transformField(field: pg.FieldDef): MField {
         dataTypeModifier: field.dataTypeModifier,
         format: field.format,
     }
-    console.log(newField);
     return newField;
 }
 
 function transformFields(fields: pg.FieldDef[]): Array<MField> {
+    console.log(fields);
     let parsedFields = new Array<MField>(fields.length);
     for (let i = 0; i < fields.length; i++) {
         parsedFields[i] = transformField(fields[i]);
