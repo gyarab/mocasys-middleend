@@ -4,6 +4,7 @@ import * as db from './db';
 import { MiddleResponse } from './middleResponse';
 import { authRouter } from './auth/endpoints';
 import { Router } from 'restify-router';
+import { response } from 'spdy';
 
 export const masterRouter = new Router();
 
@@ -33,7 +34,14 @@ masterRouter.post('/qdb', (req, res, next) => {
                 res.send(new errors.BadRequestError(error.message));
             } else {
                 // Parse for client
-                res.send(new MiddleResponse(result));
+                if (Array.isArray(result)) {
+                    let responses = new Array(result.length);
+                    for (let i = 0; i < result.length; i++)
+                        responses[i] = new MiddleResponse(result[i]);
+                    res.send(responses);
+                } else {
+                    res.send(new MiddleResponse(result));
+                }
             }
             return next();
         });

@@ -20,7 +20,6 @@ function transformField(field: pg.FieldDef): MField {
         dataTypeModifier: field.dataTypeModifier,
         format: field.format,
     }
-    console.log(newField);
     return newField;
 }
 
