@@ -4,7 +4,7 @@ import * as renamer from './db/renamer';
 interface MField {
     tableName: String;
     // TODO: Replace with columnName
-    columnID: Number;
+    columnName: String;
     dataTypeName: String;
     dataTypeSize: Number;
     dataTypeModifier: Number;
@@ -14,17 +14,17 @@ interface MField {
 function transformField(field: pg.FieldDef): MField {
     let newField = {
         tableName: renamer.tableName(field.tableID),
-        columnID: field.columnID,
+        columnName: field.name,
         dataTypeName: renamer.typeName(field.dataTypeID),
         dataTypeSize: field.dataTypeSize,
         dataTypeModifier: field.dataTypeModifier,
         format: field.format,
     }
-    console.log(newField);
     return newField;
 }
 
 function transformFields(fields: pg.FieldDef[]): Array<MField> {
+    console.log(fields);
     let parsedFields = new Array<MField>(fields.length);
     for (let i = 0; i < fields.length; i++) {
         parsedFields[i] = transformField(fields[i]);
