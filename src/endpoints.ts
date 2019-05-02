@@ -4,7 +4,6 @@ import * as db from './db';
 import { MiddleResponse } from './middleResponse';
 import { authRouter } from './auth/endpoints';
 import { Router } from 'restify-router';
-import { response } from 'spdy';
 
 export const masterRouter = new Router();
 

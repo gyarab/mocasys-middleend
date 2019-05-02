@@ -1,6 +1,18 @@
 import * as config from 'config';
 import * as crypto from 'crypto';
 import * as pg from 'pg';
+import * as moment from 'moment';
+
+const pgTypes = pg.types;
+const DATATYPE_DATE = 1082;
+
+function parseDate(val) {
+    return val === null ? null : moment(val).format('YYYY-MM-DD')
+};
+
+pgTypes.setTypeParser(DATATYPE_DATE, function(val) {
+    return val === null ? null : parseDate(val)
+});
 
 export const dbConfig = config.get('db');
 
