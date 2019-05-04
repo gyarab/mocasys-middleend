@@ -180,6 +180,40 @@ This includes cases when there is any *DbError*
 since this is not a user query (the user was not found etc.).
 
 
+## PUT /auth/password
+
+Change a user's password.
+
+### Request
+
+All fields shown are required. User does not have to authenticated
+to change the password.
+
+```json
+{
+  "username": "tester1",
+  "currentPassword": "1234567890",
+  "newPassword": "0987654321"
+}
+```
+
+### Response
+
+When successful, 200 is returned
+
+### Errors
+
+```json
+{
+  "code": "BadRequest",
+  "message": "<message>"
+}
+```
+
+The *message* param can contain **auth.password.change.failed** or
+**auth.password.change.noChange** when *currentPassword* equals the *newPassword* or
+**auth.password.param.newPassword.invalid** when *newPassword* is not good enough.
+
 ## POST /auth/reader
 
 ### Request

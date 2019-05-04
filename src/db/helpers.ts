@@ -15,6 +15,14 @@ export function userPasswordHash(username: string): Promise<pg.QueryResult> {
     );
 }
 
+export function changeUserPasswordHash(user_id: number, newHash: string) {
+    return db.queryPromise(
+        'UPDATE user_passwords_data ' +
+        'SET pw_hash = $2' +
+        'WHERE id_user = $1;', [user_id, newHash]
+    );
+}
+
 export function cardIdAndSecretKey(card_id, secret_key): Promise<pg.QueryResult> {
     return db.queryPromise(
         'SELECT user_mifare_cards_current.id_user FROM user_mifare_cards_current ' +

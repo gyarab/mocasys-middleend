@@ -37,37 +37,79 @@ authRouter.get('', (req, res, next) => {
     return next();
 });
 
-authRouter.post('/password', preAuthGen('password', ['username', 'password']), (req, res, next) => {
+function verifyPassword(username: string, password: string, callback: (err: Error, result: boolean, sqlResult) => any) {
     // Fetch db
-    dbHelpers.userPasswordHash(req.params['username'])
+    dbHelpers.userPasswordHash(username)
         .then(sqlResult => {
             // If sqlResult.rowCount == 0, error is thrown and it is caught
             let hashSalt: string = sqlResult.rows[0][0];
             // Verify
-            auth.verifyHashSalt(req.params['password'], hashSalt,
-                (err: Error, result: boolean) => {
-                    if (err) {
-                        res.send(new errors.InternalServerError({}, 'auth.password.failed'));
-                    } else if (result) {
-                        let sessionToken = auth.createSessionToken({
-                            id: sqlResult.rows[0][1],  // id_user
-                            method: 'password',
-                        }, new Date().getTime());
-                        res.send({
-                            sessionToken: sessionToken,
-                            expiresIn: serverConfig['sessionTokenExpiresInMillis'],
-                        });
-                    } else {
-                        res.send(new errors.BadRequestError({}, 'auth.password.failed'));
-                    }
-                    return next();
-                }
+            auth.verifyHashSalt(password, hashSalt,
+                (err: Error, result: boolean) => callback(err, result, sqlResult)
             );
         })
         .catch(error => {
             console.error(error);
-            res.send(new errors.BadRequestError({}, 'auth.password.failed'));
-            return next(error);
+            callback(error, false, null);
+        });
+}
+
+authRouter.post('/password', preAuthGen('password', ['username', 'password']), (req, res, next) => {
+    verifyPassword(req.params.username, req.params.password,
+        (err: Error, result: boolean, sqlResult) => {
+            if (err) {
+                res.send(new errors.BadRequestError({}, 'auth.password.failed'));
+                return next(err);
+            } else if (result && sqlResult) {
+                let sessionToken = auth.createSessionToken({
+                    id: sqlResult.rows[0][1],  // id_user
+                    method: 'password',
+                }, new Date().getTime());
+                res.send({
+                    sessionToken: sessionToken,
+                    expiresIn: serverConfig['sessionTokenExpiresInMillis'],
+                });
+            } else {
+                res.send(new errors.BadRequestError({}, 'auth.password.failed'));
+            }
+            return next();
+        });
+});
+
+authRouter.put('/password', preAuthGen('password', ['currentPassword', 'newPassword']), (req, res, next) => {
+    if (req.params.newPassword === req.params.currentPassword) {
+        res.send(new errors.BadRequestError({}, 'auth.password.change.noChange'));
+        return next();
+    }
+    verifyPassword(req.params.username, req.params.currentPassword,
+        (err: Error, result: boolean, sqlResult) => {
+            if (err) {
+                res.send(new errors.BadRequestError({}, 'auth.password.change.failed'));
+                return next(err);
+            } else if (req.params['newPassword'] !instanceof String || req.params['newPassword'].length < 8) {
+                res.send(new errors.BadRequestError({}, 'auth.password.param.newPassword.invalid'));
+            } else if (result && sqlResult) {
+                // Change password
+                auth.createHashSalt(req.params.newPassword, (err: Error, newHashSalt: string) => {
+                    dbHelpers.changeUserPasswordHash(sqlResult.rows[0][1], newHashSalt)
+                        .then(changeResult => {
+                            if (changeResult.rowCount > 0) {
+                                res.send(200);
+                            } else {
+                                res.send(new errors.BadRequestError({}, 'auth.password.change.failed'));
+                            }
+                            return next();
+                        })
+                        .catch(err => {
+                            console.log(err);
+                            res.send(new errors.BadRequestError({}, 'auth.password.change.failed'));
+                            return next(err);
+                        });
+                });
+            } else {
+                res.send(new errors.BadRequestError({}, 'auth.password.change.failed'));
+            }
+            return next();
         });
 });
 
