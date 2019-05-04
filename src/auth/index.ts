@@ -10,7 +10,7 @@ export function validateSessionToken(req, res, next) {
             if (type === 'Token') {
                 let sessionTokenEncoded = parts[1];
                 let sessionToken = verifySessionToken(sessionTokenEncoded, serverConfig['sessionSecret']);
-                if (sessionToken !== null
+                if (sessionToken !== null && sessionToken !== undefined
                     && sessionToken.createdAt + serverConfig['sessionTokenExpiresInMillis'] >= new Date().getTime()) {
                     req['sessionToken'] = sessionToken;
                 }

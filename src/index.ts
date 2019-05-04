@@ -5,6 +5,7 @@ import * as renamer from './db/renamer';
 import { validateSessionToken } from './auth';
 import { masterRouter } from './endpoints';
 
+console.log(`Config name: ${config.get('_desc')}`);
 export const serverConfig = config.get('server');
 export const server = restify.createServer();
 

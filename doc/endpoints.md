@@ -68,7 +68,7 @@ Query with additional data:
     },
     // ...
     {
-      s"format": "text"
+      "format": "text"
     },
   ]
 }
