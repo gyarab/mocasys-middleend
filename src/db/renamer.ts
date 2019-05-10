@@ -34,6 +34,9 @@ export function tableName(id: Number): String {
 export function init(callback: () => any) {
     if (isInitialized()) return;
     db.query(typeQuery, [], (err: Error, resultTypes) => {
+        if(err !== undefined) {
+            console.error("Error initialising SQL renamer:", err);
+        }
         // + column names
         db.query(tableNamesQuery, [], (err: Error, resultTableNames) => {
             let rows = resultTableNames.rows;
